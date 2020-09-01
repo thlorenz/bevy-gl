@@ -1,25 +1,11 @@
 use bevy::{
     prelude::*,
     render::{
-        pass::ClearColor,
         pipeline::{PipelineDescriptor, RenderPipeline},
-        shader::{ShaderStage, ShaderStages},
+        shader::ShaderStages,
     },
-    window::WindowMode,
 };
-use std::{error::Error, str::from_utf8};
-
-fn vert_frag_shaders(
-    vertex_path: &str,
-    frag_path: &str,
-) -> Result<(Shader, Shader), Box<dyn Error>> {
-    let vert_buffer = std::fs::read(&vertex_path)?;
-    let frag_buffer = std::fs::read(&frag_path)?;
-    Ok((
-        Shader::from_glsl(ShaderStage::Vertex, from_utf8(&*vert_buffer)?),
-        Shader::from_glsl(ShaderStage::Fragment, from_utf8(&*frag_buffer)?),
-    ))
-}
+use bevy_gl::{app::app_default, util::vert_frag_shaders};
 
 /**
  * This is the most basic example using shaders that I could come up with.
@@ -31,26 +17,7 @@ fn vert_frag_shaders(
  * We do need a camera as otherwise we don't see the cube at all.
  */
 fn main() {
-    let window_config: WindowDescriptor = WindowDescriptor {
-        title: "Hello Cube!".to_string(),
-        width: 1600,
-        height: 1200,
-        vsync: true,
-        resizable: false,
-        mode: WindowMode::Windowed,
-        ..Default::default()
-    };
-
-    let anti_alias_config: Msaa = Msaa { samples: 4 };
-    let clear_background: ClearColor = ClearColor(Color::rgb(0.02, 0.03, 0.03));
-
-    App::build()
-        .add_resource(anti_alias_config)
-        .add_resource(window_config)
-        .add_resource(clear_background)
-        .add_default_plugins()
-        .add_startup_system(setup.system())
-        .run();
+    app_default().add_startup_system(setup.system()).run();
 }
 
 fn setup(
