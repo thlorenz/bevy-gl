@@ -17,7 +17,9 @@ use bevy_gl::{app::app_default, util::vert_frag_shaders};
  * We do need a camera as otherwise we don't see the cube at all.
  */
 fn main() {
-    app_default().add_startup_system(setup.system()).run();
+    app_default("Hello bevy Cube".to_string())
+        .add_startup_system(setup.system())
+        .run();
 }
 
 fn setup(

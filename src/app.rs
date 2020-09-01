@@ -1,8 +1,8 @@
 use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 
-pub fn app_default() -> AppBuilder {
+pub fn app_default(title: String) -> AppBuilder {
     let window_config: WindowDescriptor = WindowDescriptor {
-        title: "Hello Cube!".to_string(),
+        title,
         width: 1600,
         height: 1200,
         vsync: true,
