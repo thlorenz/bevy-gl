@@ -1,0 +1,13 @@
+[package]
+name = "bevy-gl"
+version = "0.1.0"
+authors = ["Thorsten Lorenz <thlorenz@gmx.de>"]
+edition = "2018"
+
+[dependencies]
+bevy = { path = "../../../libs/bevy/bevy", version = "0.1.3" }
+
+
+[[bin]]
+name="basics_hello_cube"
+path= "src/basics/hello_cube/main.rs"
