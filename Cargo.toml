@@ -19,3 +19,8 @@ path= "src/basics/hello_triangle/main.rs"
 [[bin]]
 name="basics_hello_plane"
 path= "src/basics/hello_plane/main.rs"
+
+[[bin]]
+name="feat_camera"
+path= "src/feat/camera/main.rs"
+
