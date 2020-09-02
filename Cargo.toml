@@ -15,3 +15,7 @@ path= "src/basics/hello_cube/main.rs"
 [[bin]]
 name="basics_hello_triangle"
 path= "src/basics/hello_triangle/main.rs"
+
+[[bin]]
+name="basics_hello_plane"
+path= "src/basics/hello_plane/main.rs"
