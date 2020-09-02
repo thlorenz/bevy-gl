@@ -142,9 +142,6 @@ pub struct MyCamera {
     pub perspective_projection: PerspectiveProjection,
     pub visible_entities: VisibleEntities,
     pub transform: Transform,
-    pub translation: Translation,
-    // pub rotation: Rotation,
-    pub scale: Scale,
 }
 
 impl Default for MyCamera {
@@ -158,9 +155,6 @@ impl Default for MyCamera {
             perspective_projection: Default::default(),
             visible_entities: Default::default(),
             transform: Default::default(),
-            translation: Default::default(),
-            // rotation: Default::default(),
-            scale: Default::default(),
         }
     }
 }
