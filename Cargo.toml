@@ -24,3 +24,6 @@ path= "src/basics/hello_plane/main.rs"
 name="feat_camera"
 path= "src/feat/camera/main.rs"
 
+[[bin]]
+name="feat_texture"
+path= "src/feat/texture/main.rs"

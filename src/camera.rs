@@ -12,6 +12,11 @@ use bevy::{
 };
 use std::ops::Mul;
 
+//
+// Derived from learnopengl.com camera implemented here https://github.com/thlorenz/opengl-rs/blob/master/src/camera.rs
+// Added camera info plugin to optionally log camera view and position to the console.
+//
+
 pub enum CameraMovement {
     Forward,
     Backward,
@@ -223,6 +228,7 @@ fn keyboard_motion_system(
     }
 }
 
+// TODO: separate mouse motion and mouse button system
 fn mouse_motion_system(
     mut mouse: ResMut<MouseEvents>,
     mouse_button_input_events: Res<Events<MouseButtonInput>>,
@@ -235,23 +241,23 @@ fn mouse_motion_system(
         &CameraConfig,
     )>,
 ) {
-    for (mut camera_view, mut transform, position, config) in &mut camera_query.iter() {
-        for event in mouse.button_events.iter(&mouse_button_input_events) {
-            match event {
-                MouseButtonInput {
-                    button: MouseButton::Left,
-                    state: ElementState::Pressed,
-                    ..
-                } => mouse_state.left_button_pressed = true,
-                MouseButtonInput {
-                    button: MouseButton::Left,
-                    state: ElementState::Released,
-                    ..
-                } => mouse_state.left_button_pressed = false,
-                _ => {}
-            };
-        }
+    for event in mouse.button_events.iter(&mouse_button_input_events) {
+        match event {
+            MouseButtonInput {
+                button: MouseButton::Left,
+                state: ElementState::Pressed,
+                ..
+            } => mouse_state.left_button_pressed = true,
+            MouseButtonInput {
+                button: MouseButton::Left,
+                state: ElementState::Released,
+                ..
+            } => mouse_state.left_button_pressed = false,
+            _ => {}
+        };
+    }
 
+    for (mut camera_view, mut transform, position, config) in &mut camera_query.iter() {
         // Only consider mouse motion events when the left mouse button is pressed
         if !mouse_state.left_button_pressed {
             return;
@@ -274,6 +280,8 @@ impl Plugin for CameraPlugin {
             .init_resource::<MouseState>()
             .add_system(keyboard_motion_system.system())
             .add_system(mouse_motion_system.system());
+        // TODO: once we understand startup events we should init the camera transform
+        // to reflect the initial camera view.
     }
 }
 
@@ -296,7 +304,7 @@ fn camera_info_system(
 
     for (camera_view, camera_position) in &mut camera_query.iter() {
         let info = format!(
-            "({:.2}:{:.2}:{:.2}) pitch: {:.2} yaw: {:.2}, FPS: {:.0}",
+            "({:.2}, {:.2}, {:.2}) pitch: {:.2}, yaw: {:.2}, FPS: {:.0}",
             camera_position.0.x(),
             camera_position.0.y(),
             camera_position.0.z(),
