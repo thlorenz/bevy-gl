@@ -1,15 +1,23 @@
 use bevy::{math::vec3, prelude::*};
 use bevy_gl::{
     app::app_default,
-    camera::{CameraPlugin, MyCamera, CameraView},
+    camera::{CameraInfoConfig, CameraInfoPlugin, CameraPlugin, CameraView, MyCamera},
 };
 
 fn main() {
     app_default("Hold left Mouse to move Camera".to_string())
         .add_startup_system(setup.system())
         .add_plugin(CameraPlugin)
+        .add_plugin(CameraInfoPlugin {
+            config: CameraInfoConfig {
+                interval_millis: 1000,
+                ..Default::default()
+            },
+            ..Default::default()
+        })
         .run();
 }
+
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
