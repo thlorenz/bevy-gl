@@ -1,7 +1,7 @@
 use bevy::{math::vec3, prelude::*};
 use bevy_gl::{
     app::app_default,
-    camera::{CameraPlugin, CameraState, MyCamera},
+    camera::{CameraPlugin, MyCamera, CameraView},
 };
 
 fn main() {
@@ -15,12 +15,6 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let camera_state = CameraState {
-        position: vec3(-3.0, 3.0, 8.0),
-        pitch: -15.0,
-        yaw: -100.0,
-        ..Default::default()
-    };
     commands
         .spawn(PbrComponents {
             mesh: meshes.add(Mesh::from(shape::Plane { size: 10.0 })),
@@ -37,5 +31,13 @@ fn setup(
             translation: Translation::new(4.0, 8.0, 4.0),
             ..Default::default()
         })
-        .spawn(MyCamera::new(camera_state));
+        .spawn(MyCamera {
+            position: vec3(-3.0, 3.0, 8.0).into(),
+            view: CameraView {
+                pitch: -15.0,
+                yaw: -100.0,
+                ..Default::default()
+            },
+            ..Default::default()
+        });
 }
