@@ -21,11 +21,5 @@ pub fn load_texture_material(
     path: &str,
 ) -> Handle<StandardMaterial> {
     let texture_handle = asset_server.load_sync(&mut textures, path).unwrap();
-
-    let material = materials.add(StandardMaterial {
-        albedo: Color::rgb(1.0, 1.0, 1.0),
-        albedo_texture: Some(texture_handle),
-        ..Default::default()
-    });
-    material
+    materials.add(texture_handle.into())
 }

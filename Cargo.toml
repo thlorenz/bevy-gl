@@ -35,3 +35,7 @@ path= "src/feat/model/head.rs"
 [[bin]]
 name="feat_model_skull"
 path= "src/feat/model/skull.rs"
+
+[[bin]]
+name="feat_model_pony_cartoon"
+path= "src/feat/model/pony_cartoon.rs"
