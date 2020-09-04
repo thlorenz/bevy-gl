@@ -1,18 +1,20 @@
 use bevy::{math::vec3, prelude::*};
 use bevy_gl::{
     app::app_default,
-    camera::{CameraInfoConfig, CameraInfoPlugin, CameraPlugin, CameraView, MyCamera},
+    camera::{
+        camera::Camera, camera_info::CameraInfoConfig, camera_plugin::CameraPlugin,
+        camera_view::CameraView,
+    },
 };
 
 fn main() {
     app_default("Hold left Mouse to move Camera".to_string())
         .add_startup_system(setup.system())
-        .add_plugin(CameraPlugin)
-        .add_plugin(CameraInfoPlugin {
-            config: CameraInfoConfig {
+        .add_plugin(CameraPlugin {
+            camera_info: Some(CameraInfoConfig {
                 interval_millis: 1000,
                 ..Default::default()
-            },
+            }),
             ..Default::default()
         })
         .run();
@@ -39,7 +41,7 @@ fn setup(
             translation: Translation::new(4.0, 8.0, 4.0),
             ..Default::default()
         })
-        .spawn(MyCamera {
+        .spawn(Camera {
             position: vec3(-3.0, 3.0, 8.0).into(),
             view: CameraView {
                 pitch: -15.0,

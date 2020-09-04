@@ -1,18 +1,18 @@
 use bevy::{math::vec3, prelude::*};
 use bevy_gl::{
     app::app_default,
-    camera::{CameraInfoConfig, CameraInfoPlugin, CameraPlugin, CameraView, MyCamera},
+    camera::{
+        camera::Camera, camera_info::CameraInfoConfig, camera_plugin::CameraPlugin,
+        camera_view::CameraView,
+    },
+    util::load_texture_material,
 };
 
 fn main() {
     app_default("bevy texture".to_string())
         .add_startup_system(setup.system())
-        .add_plugin(CameraPlugin)
-        .add_plugin(CameraInfoPlugin {
-            config: CameraInfoConfig {
-                interval_millis: 1000,
-                ..Default::default()
-            },
+        .add_plugin(CameraPlugin {
+            camera_info: Some(CameraInfoConfig::default()),
             ..Default::default()
         })
         .run();
@@ -53,14 +53,14 @@ fn setup(
         })
         .spawn(LightComponents {
             light: Light {
-                color: Color::rgb(5.0, 5.0, 5.0),
+                color: Color::rgb(2.0, 2.0, 2.0),
                 depth: 0.1..50.0,
                 fov: f32::to_radians(60.0),
             },
             translation: Translation::new(4.0, 8.0, 4.0),
             ..Default::default()
         })
-        .spawn(MyCamera {
+        .spawn(Camera {
             position: vec3(6.40, 5.34, 7.17).into(),
             view: CameraView {
                 pitch: -29.00,
@@ -70,20 +70,4 @@ fn setup(
 
             ..Default::default()
         });
-}
-
-fn load_texture_material(
-    asset_server: &AssetServer,
-    mut textures: &mut Assets<Texture>,
-    materials: &mut Assets<StandardMaterial>,
-    path: &str,
-) -> Handle<StandardMaterial> {
-    let texture_handle = asset_server.load_sync(&mut textures, path).unwrap();
-
-    let material = materials.add(StandardMaterial {
-        albedo: Color::rgb(0.5, 0.4, 0.3),
-        albedo_texture: Some(texture_handle),
-        ..Default::default()
-    });
-    material
 }
