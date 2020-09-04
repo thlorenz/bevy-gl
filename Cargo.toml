@@ -31,3 +31,7 @@ path= "src/feat/texture/main.rs"
 [[bin]]
 name="feat_model_head"
 path= "src/feat/model/head.rs"
+
+[[bin]]
+name="feat_model_skull"
+path= "src/feat/model/skull.rs"
