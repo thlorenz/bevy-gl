@@ -27,3 +27,7 @@ path= "src/feat/camera/main.rs"
 [[bin]]
 name="feat_texture"
 path= "src/feat/texture/main.rs"
+
+[[bin]]
+name="feat_model_head"
+path= "src/feat/model/head.rs"
