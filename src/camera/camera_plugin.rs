@@ -81,14 +81,9 @@ fn mouse_motion_system(
     mut mouse: ResMut<MouseEvents>,
     mouse_motion_events: Res<Events<MouseMotion>>,
     mouse_state: Res<MouseState>,
-    mut camera_query: Query<(
-        &mut CameraView,
-        &mut Transform,
-        &CameraPosition,
-        &CameraConfig,
-    )>,
+    mut camera_query: Query<(&mut CameraView, &CameraConfig)>,
 ) {
-    for (mut camera_view, mut transform, position, config) in &mut camera_query.iter() {
+    for (mut camera_view, config) in &mut camera_query.iter() {
         // Only consider mouse motion events when the left mouse button is pressed
         if !mouse_state.left_button_pressed {
             return;
@@ -98,6 +93,13 @@ fn mouse_motion_system(
             let delta: Vec2 = event.delta;
             camera_view.process_mouse_move(delta.x(), delta.y(), &config);
         }
+    }
+}
+
+fn update_camera_system(
+    mut camera_query: Query<(&mut CameraView, &mut Transform, &CameraPosition)>,
+) {
+    for (mut camera_view, mut transform, position) in &mut camera_query.iter() {
         camera_view.update_camera_vectors();
         transform.value = camera_view.get_view(&position);
     }
@@ -114,7 +116,8 @@ impl Plugin for CameraPlugin {
             .init_resource::<MouseState>()
             .add_system(keyboard_motion_system.system())
             .add_system(mouse_button_system.system())
-            .add_system(mouse_motion_system.system());
+            .add_system(mouse_motion_system.system())
+            .add_system_to_stage(stage::POST_UPDATE, update_camera_system.system());
 
         match self.camera_info {
             Some(camera_info) => {
@@ -124,7 +127,5 @@ impl Plugin for CameraPlugin {
             }
             None => {}
         }
-        // TODO: once we understand startup events we should init the camera transform
-        // to reflect the initial camera view.
     }
 }
