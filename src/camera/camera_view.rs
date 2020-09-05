@@ -16,26 +16,41 @@ pub struct CameraView {
     pub pitch: f32,
 
     pub zoom: f32,
-
-    pub is_dirty: bool,
 }
 
-impl Default for CameraView {
+pub struct CameraViewOpts {
+    pub yaw: f32,
+    pub pitch: f32,
+    pub zoom: f32,
+}
+
+impl Default for CameraViewOpts {
     fn default() -> Self {
-        CameraView {
-            front: vec3(0.0, 0.0, -1.0),
-            up: vec3(0.0, 0.0, 0.0),
-            right: vec3(0.0, 0.0, 0.0),
-            world_up: vec3(0.0, 1.0, 0.0),
+        Self {
             yaw: -90.0,
             pitch: 0.0,
             zoom: 45.0,
-            is_dirty: true,
         }
     }
 }
 
 impl CameraView {
+    pub fn new(opts: CameraViewOpts) -> Self {
+        // Cannot just impl default on CameraView itself as we need a constructor
+        // in order to properly initialize the view after it was created.
+        let mut view = CameraView {
+            front: vec3(0.0, 0.0, -1.0),
+            up: vec3(0.0, 0.0, 0.0),
+            right: vec3(0.0, 0.0, 0.0),
+            world_up: vec3(0.0, 1.0, 0.0),
+            yaw: opts.yaw,
+            pitch: opts.pitch,
+            zoom: opts.zoom,
+        };
+        view.update_camera_vectors();
+        view
+    }
+
     pub fn get_view(&self, position: &CameraPosition) -> Mat4 {
         let target = position.pos() + self.front;
         Mat4::face_toward(position.pos(), target, self.up)
@@ -76,7 +91,7 @@ impl CameraView {
         if config.constrain_pitch {
             self.constrain_pitch();
         }
-        self.is_dirty = true;
+        self.update_camera_vectors()
     }
 
     fn constrain_pitch(&mut self) {
@@ -96,7 +111,7 @@ impl CameraView {
         if self.zoom > 45.0 {
             self.zoom = 45.0
         }
-        self.is_dirty = true;
+        self.update_camera_vectors()
     }
 
     pub fn update_camera_vectors(&mut self) {

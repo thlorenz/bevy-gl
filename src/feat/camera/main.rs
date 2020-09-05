@@ -2,8 +2,10 @@ use bevy::{math::vec3, prelude::*};
 use bevy_gl::{
     app::app_default,
     camera::{
-        camera::Camera, camera_info::CameraInfoConfig, camera_plugin::CameraPlugin,
-        camera_view::CameraView,
+        camera::Camera,
+        camera_info::CameraInfoConfig,
+        camera_plugin::CameraPlugin,
+        camera_view::{CameraView, CameraViewOpts},
     },
 };
 
@@ -43,11 +45,11 @@ fn setup(
         })
         .spawn(Camera {
             position: vec3(-3.0, 3.0, 8.0).into(),
-            view: CameraView {
+            view: CameraView::new(CameraViewOpts {
                 pitch: -15.0,
                 yaw: -100.0,
                 ..Default::default()
-            },
+            }),
             ..Default::default()
         });
 }

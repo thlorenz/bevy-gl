@@ -23,7 +23,7 @@ pub struct Camera {
 impl Default for Camera {
     fn default() -> Self {
         Self {
-            view: Default::default(),
+            view: CameraView::new(Default::default()),
             position: Default::default(),
             config: Default::default(),
             camera: BevyCamera {

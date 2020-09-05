@@ -2,8 +2,10 @@ use bevy::{math::vec3, prelude::*};
 use bevy_gl::{
     app::app_default,
     camera::{
-        camera::Camera, camera_info::CameraInfoConfig, camera_plugin::CameraPlugin,
-        camera_view::CameraView,
+        camera::Camera,
+        camera_info::CameraInfoConfig,
+        camera_plugin::CameraPlugin,
+        camera_view::{CameraView, CameraViewOpts},
     },
     util::load_texture_material,
 };
@@ -62,11 +64,11 @@ fn setup(
         })
         .spawn(Camera {
             position: vec3(6.40, 5.34, 7.17).into(),
-            view: CameraView {
+            view: CameraView::new(CameraViewOpts {
                 pitch: -29.00,
                 yaw: -135.00,
                 ..Default::default()
-            },
+            }),
 
             ..Default::default()
         });
