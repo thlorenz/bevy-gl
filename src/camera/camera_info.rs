@@ -17,9 +17,9 @@ fn camera_info_system(
     for (camera_view, camera_position) in &mut camera_query.iter() {
         let info = format!(
             "({:.2}, {:.2}, {:.2}) pitch: {:.2}, yaw: {:.2}, FPS: {:.0}",
-            camera_position.0.x(),
-            camera_position.0.y(),
-            camera_position.0.z(),
+            camera_position.pos().x(),
+            camera_position.pos().y(),
+            camera_position.pos().z(),
             camera_view.pitch,
             camera_view.yaw,
             (1000.0 / dt as f32).round()

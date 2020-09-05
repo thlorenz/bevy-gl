@@ -27,28 +27,25 @@ fn keyboard_motion_system(
     time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
     mut query: Query<(
-        &mut CameraView,
+        &CameraView,
         &mut Transform,
         &mut CameraPosition,
         &CameraConfig,
     )>,
 ) {
     let dt = time.delta.as_millis();
-    for (mut camera_view, mut transform, mut position, config) in &mut query.iter() {
+    for (camera_view, mut transform, mut position, config) in &mut query.iter() {
         if keyboard_input.pressed(KeyCode::W) {
-            position.0 =
-                camera_view.process_keyboard(CameraMovement::Forward, &position, &config, dt);
+            camera_view.process_keyboard(CameraMovement::Forward, &mut position, &config, dt);
         }
         if keyboard_input.pressed(KeyCode::S) {
-            position.0 =
-                camera_view.process_keyboard(CameraMovement::Backward, &position, &config, dt);
+            camera_view.process_keyboard(CameraMovement::Backward, &mut position, &config, dt);
         }
         if keyboard_input.pressed(KeyCode::A) {
-            position.0 = camera_view.process_keyboard(CameraMovement::Left, &position, &config, dt);
+            camera_view.process_keyboard(CameraMovement::Left, &mut position, &config, dt);
         }
         if keyboard_input.pressed(KeyCode::D) {
-            position.0 =
-                camera_view.process_keyboard(CameraMovement::Right, &position, &config, dt);
+            camera_view.process_keyboard(CameraMovement::Right, &mut position, &config, dt);
         }
         transform.value = camera_view.get_view(&position);
     }
@@ -97,11 +94,17 @@ fn mouse_motion_system(
 }
 
 fn update_camera_system(
-    mut camera_query: Query<(&mut CameraView, &mut Transform, &CameraPosition)>,
+    mut camera_query: Query<(&mut CameraView, &mut Transform, &mut CameraPosition)>,
 ) {
-    for (mut camera_view, mut transform, position) in &mut camera_query.iter() {
-        camera_view.update_camera_vectors();
-        transform.value = camera_view.get_view(&position);
+    for (mut camera_view, mut transform, mut position) in &mut camera_query.iter() {
+        if camera_view.is_dirty {
+            camera_view.update_camera_vectors();
+        }
+        if camera_view.is_dirty || position.is_dirty {
+            transform.value = camera_view.get_view(&position);
+        }
+        camera_view.is_dirty = false;
+        position.is_dirty = false;
     }
 }
 

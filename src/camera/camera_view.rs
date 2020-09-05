@@ -16,11 +16,13 @@ pub struct CameraView {
     pub pitch: f32,
 
     pub zoom: f32,
+
+    pub is_dirty: bool,
 }
 
 impl Default for CameraView {
     fn default() -> Self {
-        let mut camera = CameraView {
+        CameraView {
             front: vec3(0.0, 0.0, -1.0),
             up: vec3(0.0, 0.0, 0.0),
             right: vec3(0.0, 0.0, 0.0),
@@ -28,16 +30,15 @@ impl Default for CameraView {
             yaw: -90.0,
             pitch: 0.0,
             zoom: 45.0,
-        };
-        camera.update_camera_vectors();
-        camera
+            is_dirty: true,
+        }
     }
 }
 
 impl CameraView {
     pub fn get_view(&self, position: &CameraPosition) -> Mat4 {
-        let target = position.0 + self.front;
-        Mat4::face_toward(position.0, target, self.up)
+        let target = position.pos() + self.front;
+        Mat4::face_toward(position.pos(), target, self.up)
     }
 
     pub fn get_back_view(&self, position: &CameraPosition) -> Mat4 {
@@ -49,18 +50,18 @@ impl CameraView {
     }
 
     pub fn process_keyboard(
-        &mut self,
+        &self,
         direction: CameraMovement,
-        position: &CameraPosition,
+        position: &mut CameraPosition,
         config: &CameraConfig,
         dt: u128,
-    ) -> Vec3 {
+    ) {
         let velocity = config.mov_speed * dt as f32;
         match direction {
-            CameraMovement::Forward => position.0 + self.front.mul(velocity),
-            CameraMovement::Backward => position.0 - self.front.mul(velocity),
-            CameraMovement::Left => position.0 - self.right.mul(velocity),
-            CameraMovement::Right => position.0 + self.right.mul(velocity),
+            CameraMovement::Forward => position.inc_pos(self.front.mul(velocity)),
+            CameraMovement::Backward => position.dec_pos(self.front.mul(velocity)),
+            CameraMovement::Left => position.dec_pos(self.right.mul(velocity)),
+            CameraMovement::Right => position.inc_pos(self.right.mul(velocity)),
         }
     }
 
@@ -75,7 +76,7 @@ impl CameraView {
         if config.constrain_pitch {
             self.constrain_pitch();
         }
-        self.update_camera_vectors();
+        self.is_dirty = true;
     }
 
     fn constrain_pitch(&mut self) {
@@ -95,6 +96,7 @@ impl CameraView {
         if self.zoom > 45.0 {
             self.zoom = 45.0
         }
+        self.is_dirty = true;
     }
 
     pub fn update_camera_vectors(&mut self) {
