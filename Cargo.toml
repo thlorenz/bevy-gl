@@ -43,3 +43,7 @@ path= "src/feat/model/pony_cartoon.rs"
 [[bin]]
 name="ecs_normal_systems"
 path= "src/ecs/normal_systems.rs"
+
+[[bin]]
+name="ecs_stage_systems"
+path= "src/ecs/stage_systems.rs"
