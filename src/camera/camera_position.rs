@@ -1,6 +1,6 @@
 use bevy::{math::vec3, prelude::*};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct CameraPosition {
     pos: Vec3,
 }

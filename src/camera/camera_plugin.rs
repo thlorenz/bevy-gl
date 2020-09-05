@@ -7,9 +7,10 @@ use super::{
 use bevy::{
     input::{
         keyboard::ElementState,
-        mouse::{MouseButtonInput, MouseMotion},
+        mouse::{MouseButtonInput, MouseMotion, MouseWheel},
     },
     prelude::*,
+    render::camera::PerspectiveProjection,
 };
 
 #[derive(Default)]
@@ -21,6 +22,7 @@ struct MouseState {
 struct MouseEvents {
     button_events: EventReader<MouseButtonInput>,
     motion_events: EventReader<MouseMotion>,
+    wheel_events: EventReader<MouseWheel>,
 }
 
 fn keyboard_motion_system(
@@ -67,7 +69,6 @@ fn mouse_button_system(
     }
 }
 
-// TODO: zoom
 fn mouse_motion_system(
     mut mouse: ResMut<MouseEvents>,
     mouse_motion_events: Res<Events<MouseMotion>>,
@@ -83,6 +84,24 @@ fn mouse_motion_system(
         for event in mouse.motion_events.iter(&mouse_motion_events) {
             let delta: Vec2 = event.delta;
             camera_view.process_mouse_move(delta.x(), delta.y(), &config);
+        }
+    }
+}
+
+fn mouse_wheel_system(
+    mut mouse: ResMut<MouseEvents>,
+    mouse_wheel_events: Res<Events<MouseWheel>>,
+    mut camera_query: Query<(&mut CameraView, &mut PerspectiveProjection)>,
+) {
+    for (mut camera_view, mut projection) in &mut camera_query.iter() {
+        for event in mouse.wheel_events.iter(&mouse_wheel_events) {
+            let dy: f32 = event.y / 10.0;
+            camera_view.process_mouse_wheel(dy);
+            // TODO: not sure why this change doesn't affect the actual projection.
+            // If we remove the projection from the Camera Entity then things don't
+            // render properly, so projection is definitely taken into account, but
+            // possibly only the very first time.
+            projection.fov = camera_view.zoom.to_radians();
         }
     }
 }
@@ -136,6 +155,7 @@ impl Plugin for CameraPlugin {
             .add_system(keyboard_motion_system.system())
             .add_system(mouse_button_system.system())
             .add_system(mouse_motion_system.system())
+            .add_system(mouse_wheel_system.system())
             .add_system(on_camera_view_changed.system())
             .add_system(on_camera_position_changed.system());
     }

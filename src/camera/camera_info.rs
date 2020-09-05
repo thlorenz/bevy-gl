@@ -1,5 +1,5 @@
 use super::{camera_position::CameraPosition, camera_view::CameraView};
-use bevy::prelude::*;
+use bevy::{prelude::*, render::camera::PerspectiveProjection};
 
 /// Note that this requires the CameraPlugin to be active
 fn update_camera_info(
@@ -7,14 +7,17 @@ fn update_camera_info(
     info_config: &CameraInfoConfig,
     camera_view: &CameraView,
     camera_position: &CameraPosition,
+    projection: &PerspectiveProjection,
 ) {
     let info = format!(
-        "({:.2}, {:.2}, {:.2}) pitch: {:.2}, yaw: {:.2}, FPS: {:.0}",
+        "({:.2}, {:.2}, {:.2}) pitch: {:.2}, yaw: {:.2}, zoom: {:.2}, fov: {:.2}, FPS: {:.0}",
         camera_position.pos().x(),
         camera_position.pos().y(),
         camera_position.pos().z(),
         camera_view.pitch,
         camera_view.yaw,
+        camera_view.zoom,
+        projection.fov,
         (1000.0 / dt).round()
     );
     match info_config.output {
@@ -30,8 +33,8 @@ fn update_camera_info(
 //
 // A bug in bevy prevents this from working properly.
 //
-// If we change: mut camera_query: Query<(&CameraView, &CameraPosition)>,
-//           to: mut camera_query: Query<(Changed<CameraView>, &CameraPosition)>,
+// If we change: mut camera_query: Query<(&CameraView, &CameraPosition, &PerspectiveProjection)>,
+//           to: mut camera_query: Query<(Changed<CameraView>, &CameraPosition, &PerspectiveProjection)>,
 // the following happens.
 //
 // 1. we enter the below function body no matter if CameraView was mutated or not
@@ -46,15 +49,21 @@ fn update_camera_info(
 fn on_camera_view_changed(
     info_config: Res<CameraInfoConfig>,
     mut info_state: ResMut<CameraInfoState>,
-    mut camera_query: Query<(&CameraView, &CameraPosition)>,
+    mut camera_query: Query<(&CameraView, &CameraPosition, &PerspectiveProjection)>,
 ) {
     if info_state.millis_since_last_update < info_config.interval_millis {
         return;
     }
     let dt = info_state.millis_since_last_update / info_state.frames_since_last_update;
 
-    for (camera_view, camera_position) in &mut camera_query.iter() {
-        update_camera_info(dt as f32, &info_config, camera_view, camera_position);
+    for (camera_view, camera_position, camera_projection) in &mut camera_query.iter() {
+        update_camera_info(
+            dt as f32,
+            &info_config,
+            camera_view,
+            camera_position,
+            camera_projection,
+        );
     }
 
     info_state.millis_since_last_update = 0;

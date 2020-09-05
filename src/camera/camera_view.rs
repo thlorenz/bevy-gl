@@ -21,7 +21,6 @@ pub struct CameraView {
 pub struct CameraViewOpts {
     pub yaw: f32,
     pub pitch: f32,
-    pub zoom: f32,
 }
 
 impl Default for CameraViewOpts {
@@ -29,7 +28,6 @@ impl Default for CameraViewOpts {
         Self {
             yaw: -90.0,
             pitch: 0.0,
-            zoom: 45.0,
         }
     }
 }
@@ -45,7 +43,7 @@ impl CameraView {
             world_up: vec3(0.0, 1.0, 0.0),
             yaw: opts.yaw,
             pitch: opts.pitch,
-            zoom: opts.zoom,
+            zoom: 45.0,
         };
         view.update_camera_vectors();
         view
@@ -103,7 +101,7 @@ impl CameraView {
         }
     }
 
-    pub fn process_mouse_scroll(&mut self, dy: f32) {
+    pub fn process_mouse_wheel(&mut self, dy: f32) {
         self.zoom -= dy;
         if self.zoom < 1.0 {
             self.zoom = 1.0
@@ -111,7 +109,6 @@ impl CameraView {
         if self.zoom > 45.0 {
             self.zoom = 45.0
         }
-        self.update_camera_vectors()
     }
 
     pub fn update_camera_vectors(&mut self) {

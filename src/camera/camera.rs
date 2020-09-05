@@ -22,18 +22,21 @@ pub struct Camera {
 
 impl Default for Camera {
     fn default() -> Self {
+        let view = CameraView::new(Default::default());
         Self {
-            view: CameraView::new(Default::default()),
+            view,
             position: Default::default(),
             config: Default::default(),
             camera: BevyCamera {
                 name: Some(base::camera::CAMERA3D.to_string()),
                 ..Default::default()
             },
-            perspective_projection: Default::default(),
+            perspective_projection: PerspectiveProjection {
+                fov: view.zoom.to_radians(),
+                ..Default::default()
+            },
             visible_entities: Default::default(),
             transform: Default::default(),
         }
     }
 }
-
