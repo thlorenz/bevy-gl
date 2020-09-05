@@ -123,14 +123,6 @@ pub struct CameraPlugin {
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.init_resource::<MouseEvents>()
-            .init_resource::<MouseState>()
-            .add_system(keyboard_motion_system.system())
-            .add_system(mouse_button_system.system())
-            .add_system(mouse_motion_system.system())
-            .add_system(on_camera_view_changed.system())
-            .add_system(on_camera_position_changed.system());
-
         match self.camera_info {
             Some(camera_info) => {
                 app.add_plugin(CameraInfoPlugin {
@@ -139,5 +131,12 @@ impl Plugin for CameraPlugin {
             }
             None => {}
         }
+        app.init_resource::<MouseEvents>()
+            .init_resource::<MouseState>()
+            .add_system(keyboard_motion_system.system())
+            .add_system(mouse_button_system.system())
+            .add_system(mouse_motion_system.system())
+            .add_system(on_camera_view_changed.system())
+            .add_system(on_camera_position_changed.system());
     }
 }
