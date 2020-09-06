@@ -47,3 +47,7 @@ path= "src/ecs/normal_systems.rs"
 [[bin]]
 name="ecs_stage_systems"
 path= "src/ecs/stage_systems.rs"
+
+[[bin]]
+name="feat_scene_persist"
+path= "src/feat/scene/persist.rs"
