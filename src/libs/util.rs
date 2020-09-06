@@ -1,6 +1,6 @@
 use bevy::{prelude::*, render::shader::ShaderStage};
 
-use std::{error::Error, str::from_utf8};
+use std::{env, error::Error, fs, str::from_utf8};
 
 pub fn vert_frag_shaders(
     vertex_path: &str,
@@ -22,4 +22,21 @@ pub fn load_texture_material(
 ) -> Handle<StandardMaterial> {
     let texture_handle = asset_server.load_sync(&mut textures, path).unwrap();
     materials.add(texture_handle.into())
+}
+
+pub fn write_to_tmp(
+    feat_id: &str,
+    filename: &str,
+    content: String,
+) -> Result<String, Box<dyn Error>> {
+    let mut dir = env::temp_dir();
+    dir.push("bevy");
+    dir.push(feat_id);
+    fs::create_dir_all(dir.clone())?;
+
+    let mut full_path = dir;
+    full_path.push(filename);
+    let full_path = full_path.to_str().unwrap();
+    std::fs::write(full_path, content)?;
+    return Ok(full_path.to_string());
 }
