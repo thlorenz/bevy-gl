@@ -33,7 +33,7 @@ impl Default for CameraViewOpts {
 }
 
 impl CameraView {
-    pub fn new(opts: CameraViewOpts) -> Self {
+    pub fn new(opts: &CameraViewOpts) -> Self {
         // Cannot just impl default on CameraView itself as we need a constructor
         // in order to properly initialize the view after it was created.
         let mut view = CameraView {

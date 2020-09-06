@@ -3,8 +3,8 @@ use bevy::{prelude::*, render::pass::ClearColor, window::WindowMode};
 pub fn app_default(title: String) -> AppBuilder {
     let window_config: WindowDescriptor = WindowDescriptor {
         title,
-        width: 1600,
-        height: 1200,
+        width: 800,
+        height: 600,
         vsync: true,
         resizable: false,
         mode: WindowMode::Windowed,

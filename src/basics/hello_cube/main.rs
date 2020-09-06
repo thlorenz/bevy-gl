@@ -5,7 +5,7 @@ use bevy::{
         shader::ShaderStages,
     },
 };
-use bevy_gl::{app::app_default, util::vert_frag_shaders};
+use bevy_gl::libs::{app::app_default, util::vert_frag_shaders};
 
 /**
  * This is the most basic example using shaders that I could come up with.

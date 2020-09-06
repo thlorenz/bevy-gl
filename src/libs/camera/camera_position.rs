@@ -32,6 +32,20 @@ impl From<Vec3> for CameraPosition {
     }
 }
 
+impl From<(f32, f32, f32)> for CameraPosition {
+    fn from(pos: (f32, f32, f32)) -> Self {
+        CameraPosition {
+            pos: vec3(pos.0, pos.1, pos.2),
+        }
+    }
+}
+
+impl From<CameraPosition> for Vec3 {
+    fn from(pos: CameraPosition) -> Self {
+        pos.pos
+    }
+}
+
 impl Default for CameraPosition {
     fn default() -> Self {
         CameraPosition {

@@ -1,11 +1,10 @@
-use bevy::{math::vec3, prelude::*};
-use bevy_gl::{
+use bevy::prelude::*;
+use bevy_gl::libs::{
     app::app_default,
     camera::{
-        camera::Camera,
         camera_info::CameraInfoConfig,
-        camera_plugin::CameraPlugin,
-        camera_view::{CameraView, CameraViewOpts},
+        camera_plugin::{AddCameraOpts, CameraTrait},
+        camera_view::CameraViewOpts,
     },
     util::load_texture_material,
 };
@@ -13,9 +12,14 @@ use bevy_gl::{
 fn main() {
     app_default("bevy texture".to_string())
         .add_startup_system(setup.system())
-        .add_plugin(CameraPlugin {
-            camera_info: Some(CameraInfoConfig::default()),
-            ..Default::default()
+        .add_camera_from(AddCameraOpts {
+            info: Some(CameraInfoConfig::default()),
+            position: (6.40, 5.34, 7.17).into(),
+            view: CameraViewOpts {
+                pitch: -29.00,
+                yaw: -135.00,
+                ..Default::default()
+            },
         })
         .run();
 }
@@ -60,16 +64,6 @@ fn setup(
                 fov: f32::to_radians(60.0),
             },
             translation: Translation::new(4.0, 8.0, 4.0),
-            ..Default::default()
-        })
-        .spawn(Camera {
-            position: vec3(6.40, 5.34, 7.17).into(),
-            view: CameraView::new(CameraViewOpts {
-                pitch: -29.00,
-                yaw: -135.00,
-                ..Default::default()
-            }),
-
             ..Default::default()
         });
 }

@@ -3,9 +3,9 @@
 // Added camera info plugin to optionally log camera view and position to the console.
 //
 
-pub mod camera;
+mod camera;
 pub mod camera_config;
 pub mod camera_info;
 pub mod camera_plugin;
-pub mod camera_position;
+mod camera_position;
 pub mod camera_view;

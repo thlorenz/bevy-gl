@@ -1,8 +1,5 @@
-use bevy::{math::vec3, prelude::*};
-use bevy_gl::{
-    camera::{camera::Camera, camera_info::CameraInfoConfig, camera_plugin::CameraPlugin},
-    util::load_texture_material,
-};
+use bevy::prelude::*;
+use bevy_gl::libs::{camera::camera_plugin::CameraTrait, util::load_texture_material};
 
 // Source: https://sketchfab.com/3d-models/skull-downloadable-1a9db900738d44298b0bc59f68123393
 fn main() {
@@ -10,13 +7,7 @@ fn main() {
         .add_resource(Msaa { samples: 4 })
         .add_default_plugins()
         .add_startup_system(setup.system())
-        .add_plugin(CameraPlugin {
-            camera_info: Some(CameraInfoConfig {
-                interval_millis: 1000,
-                ..Default::default()
-            }),
-            ..Default::default()
-        })
+        .add_camera()
         .run();
 }
 
@@ -47,11 +38,6 @@ fn setup(
         // light
         .spawn(LightComponents {
             translation: Translation::new(4.0, 5.0, 4.0),
-            ..Default::default()
-        })
-        // camera
-        .spawn(Camera {
-            position: vec3(0.0, 0.0, 3.0).into(),
             ..Default::default()
         });
 }

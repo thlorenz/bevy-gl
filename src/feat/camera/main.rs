@@ -1,22 +1,23 @@
-use bevy::{math::vec3, prelude::*};
-use bevy_gl::{
+use bevy::prelude::*;
+use bevy_gl::libs::{
     app::app_default,
     camera::{
-        camera::Camera,
-        camera_info::CameraInfoConfig,
-        camera_plugin::CameraPlugin,
-        camera_view::{CameraView, CameraViewOpts},
+        camera_plugin::{AddCameraOpts, CameraTrait},
+        camera_view::CameraViewOpts,
     },
 };
 
 fn main() {
     app_default("Hold left Mouse to move Camera".to_string())
         .add_startup_system(setup.system())
-        .add_plugin(CameraPlugin {
-            camera_info: Some(CameraInfoConfig {
-                interval_millis: 1000,
+        .add_camera_from(AddCameraOpts {
+            info: Some(Default::default()),
+            position: (-3.0, 3.0, 8.0).into(),
+            view: CameraViewOpts {
+                pitch: -15.0,
+                yaw: -100.0,
                 ..Default::default()
-            }),
+            },
             ..Default::default()
         })
         .run();
@@ -41,15 +42,6 @@ fn setup(
         })
         .spawn(LightComponents {
             translation: Translation::new(4.0, 8.0, 4.0),
-            ..Default::default()
-        })
-        .spawn(Camera {
-            position: vec3(-3.0, 3.0, 8.0).into(),
-            view: CameraView::new(CameraViewOpts {
-                pitch: -15.0,
-                yaw: -100.0,
-                ..Default::default()
-            }),
             ..Default::default()
         });
 }

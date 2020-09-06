@@ -22,7 +22,7 @@ pub struct Camera {
 
 impl Default for Camera {
     fn default() -> Self {
-        let view = CameraView::new(Default::default());
+        let view = CameraView::new(&Default::default());
         Self {
             view,
             position: Default::default(),

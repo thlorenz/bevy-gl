@@ -1,8 +1,9 @@
 use super::{
+    camera::Camera,
     camera_config::CameraConfig,
     camera_info::{CameraInfoConfig, CameraInfoPlugin},
     camera_position::{CameraMovement, CameraPosition},
-    camera_view::CameraView,
+    camera_view::{CameraView, CameraViewOpts},
 };
 use bevy::{
     input::{
@@ -15,7 +16,7 @@ use bevy::{
 
 #[derive(Default)]
 struct MouseState {
-    pub left_button_pressed: bool,
+    left_button_pressed: bool,
 }
 
 #[derive(Default)]
@@ -136,8 +137,8 @@ fn update_camera(
 }
 
 #[derive(Default)]
-pub struct CameraPlugin {
-    pub camera_info: Option<CameraInfoConfig>,
+struct CameraPlugin {
+    camera_info: Option<CameraInfoConfig>,
 }
 
 impl Plugin for CameraPlugin {
@@ -158,5 +159,52 @@ impl Plugin for CameraPlugin {
             .add_system(mouse_wheel_system.system())
             .add_system(on_camera_view_changed.system())
             .add_system(on_camera_position_changed.system());
+    }
+}
+
+//
+// Add Camera Trait
+//
+
+pub struct AddCameraOpts {
+    pub position: Vec3,
+    pub view: CameraViewOpts,
+    pub info: Option<CameraInfoConfig>,
+}
+
+impl Default for AddCameraOpts {
+    fn default() -> Self {
+        AddCameraOpts {
+            position: CameraPosition::default().into(),
+            view: Default::default(),
+            info: None,
+        }
+    }
+}
+
+fn install_camera(mut commands: Commands, opts: Res<AddCameraOpts>) {
+    commands.spawn(Camera {
+        position: opts.position.into(),
+        view: CameraView::new(&opts.view),
+        ..Default::default()
+    });
+}
+
+pub trait CameraTrait {
+    fn add_camera_from(&mut self, opts: AddCameraOpts) -> &mut Self;
+    fn add_camera(&mut self) -> &mut Self;
+}
+
+impl CameraTrait for AppBuilder {
+    fn add_camera_from(&mut self, opts: AddCameraOpts) -> &mut Self {
+        self.add_plugin(CameraPlugin {
+            camera_info: opts.info,
+        })
+        .add_resource(opts)
+        .add_startup_system(install_camera.system());
+        self
+    }
+    fn add_camera(&mut self) -> &mut Self {
+        self.add_camera_from(Default::default())
     }
 }
