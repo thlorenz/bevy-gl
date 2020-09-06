@@ -49,7 +49,7 @@ fn update_camera_info(
 fn on_camera_view_changed(
     info_config: Res<CameraInfoConfig>,
     mut info_state: ResMut<CameraInfoState>,
-    mut camera_query: Query<(&CameraView, &CameraPosition, &PerspectiveProjection)>,
+    mut camera_query: Query<(Changed<CameraView>, &CameraPosition, &PerspectiveProjection)>,
 ) {
     if info_state.millis_since_last_update < info_config.interval_millis {
         return;
@@ -60,7 +60,7 @@ fn on_camera_view_changed(
         update_camera_info(
             dt as f32,
             &info_config,
-            camera_view,
+            &*camera_view,
             camera_position,
             camera_projection,
         );

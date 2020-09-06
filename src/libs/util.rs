@@ -30,7 +30,7 @@ pub fn write_to_tmp(
     content: String,
 ) -> Result<String, Box<dyn Error>> {
     let mut dir = env::temp_dir();
-    dir.push("bevy");
+    dir.push("bevy-gl");
     dir.push(feat_id);
     fs::create_dir_all(dir.clone())?;
 
