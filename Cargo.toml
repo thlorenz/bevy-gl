@@ -51,3 +51,7 @@ path= "src/ecs/stage_systems.rs"
 [[bin]]
 name="feat_scene_persist"
 path= "src/feat/scene/persist.rs"
+
+[[bin]]
+name="feat_scene_spawn"
+path= "src/feat/scene/spawn.rs"
