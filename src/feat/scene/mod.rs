@@ -7,12 +7,12 @@ enum SpawnRequest {
 
 #[derive(Default)]
 struct SpawnState {
-    pub spawn_request: Option<SpawnRequest>,
-    pub cube_mesh: Handle<Mesh>,
-    pub cube_material: Handle<StandardMaterial>,
-    pub sphere_mesh: Handle<Mesh>,
-    pub sphere_material: Handle<StandardMaterial>,
-    pub translation: Translation,
+    spawn_request: Option<SpawnRequest>,
+    cube_mesh: Handle<Mesh>,
+    cube_material: Handle<StandardMaterial>,
+    sphere_mesh: Handle<Mesh>,
+    sphere_material: Handle<StandardMaterial>,
+    translation: Translation,
 }
 
 pub struct SpawnPlugin;

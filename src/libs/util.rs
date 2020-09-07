@@ -1,6 +1,6 @@
 use bevy::{prelude::*, render::shader::ShaderStage};
 
-use std::{env, error::Error, fs, str::from_utf8};
+use std::{env, error::Error, fs, io, str::from_utf8};
 
 pub fn vert_frag_shaders(
     vertex_path: &str,
@@ -24,11 +24,7 @@ pub fn load_texture_material(
     materials.add(texture_handle.into())
 }
 
-pub fn write_to_tmp(
-    feat_id: &str,
-    filename: &str,
-    content: String,
-) -> Result<String, Box<dyn Error>> {
+pub fn init_tmp_path(feat_id: &str, filename: &str) -> Result<String, Box<dyn Error>> {
     let mut dir = env::temp_dir();
     dir.push("bevy-gl");
     dir.push(feat_id);
@@ -37,6 +33,31 @@ pub fn write_to_tmp(
     let mut full_path = dir;
     full_path.push(filename);
     let full_path = full_path.to_str().unwrap();
-    std::fs::write(full_path, content)?;
-    return Ok(full_path.to_string());
+    Ok(full_path.to_string())
+}
+
+pub fn write_to(full_path: String, content: String) -> io::Result<()> {
+    std::fs::write(full_path.clone(), content)
+}
+
+pub fn load_from(full_path: String) -> io::Result<String> {
+    std::fs::read_to_string(full_path)
+}
+
+pub fn save_to_tmp(
+    feat_id: &str,
+    filename: &str,
+    content: String,
+) -> Result<String, Box<dyn Error>> {
+    let full_path = init_tmp_path(feat_id, filename)?;
+    write_to(full_path.clone(), content)?;
+    Ok(full_path)
+}
+
+pub fn load_from_tmp(
+    feat_id: &str,
+    filename: &str) -> Result<(String, String), Box<dyn Error>> {
+    let full_path = init_tmp_path(feat_id, filename)?;
+    let content = load_from(full_path.clone())?;
+    Ok((full_path, content))
 }
