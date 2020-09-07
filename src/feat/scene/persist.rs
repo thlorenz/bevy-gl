@@ -1,12 +1,15 @@
 use bevy::{prelude::*, type_registry::TypeRegistry};
-use bevy_gl::libs::{
-    app::app_default,
-    camera::{
-        camera_info::CameraInfoConfig,
-        camera_plugin::{AddCameraOpts, CameraTrait},
-        camera_view::CameraViewOpts,
+use bevy_gl::{
+    feat::scene::SpawnPlugin,
+    libs::{
+        app::app_default,
+        camera::{
+            camera_info::CameraInfoConfig,
+            camera_plugin::{AddCameraOpts, CameraTrait},
+            camera_view::CameraViewOpts,
+        },
+        util::write_to_tmp,
     },
-    util::write_to_tmp,
 };
 
 #[derive(Default, Debug)]
@@ -29,6 +32,7 @@ fn main() {
         })
         .add_system(keyboard_commands.system())
         .add_resource(RequestState::default())
+        .add_plugin(SpawnPlugin {})
         .run();
 }
 
@@ -47,12 +51,6 @@ fn setup(
         .spawn(PbrComponents {
             mesh: meshes.add(Mesh::from(shape::Plane { size: 10.0 })),
             material,
-            ..Default::default()
-        })
-        .spawn(PbrComponents {
-            mesh: cube_handle,
-            material,
-            translation: Translation::new(0.0, 1.0, 0.0),
             ..Default::default()
         })
         .spawn(LightComponents {
