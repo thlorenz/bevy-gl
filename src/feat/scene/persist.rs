@@ -86,7 +86,7 @@ fn handle_persist_request(world: &mut World, resources: &mut Resources) {
                 .serialize_ron(&type_registry.property.read())
                 .expect("Failed to serialize scene");
 
-            let saved_to = save_to_tmp("persist_scene", "scene.ron", ron)
+            let saved_to = save_to_tmp("persist_scene", "scene.scn", ron)
                 .expect("Failed to save serialized scene");
             println!("saved current scene to {}", saved_to);
             request_state.requested = None;
@@ -100,12 +100,9 @@ fn handle_load_request(
     mut scene_spawner: ResMut<SceneSpawner>,
     mut request_state: ResMut<RequestState>,
 ) {
-    // This currently crashes, I tried loading the scene synchronously (via thread_local_system) as
-    // well, but that crashes in the same manner with `MissingAssetHandler`.
-    // This is the line that fails: `asset_server.load(scene_path.clone())`
     match request_state.requested {
         Some(Request::LoadScene) => {
-            let scene_path = init_tmp_path("persist_scene", "scene.ron")
+            let scene_path = init_tmp_path("persist_scene", "scene.scn")
                 .expect("Failed to load serialized scene, make sure to persist one first");
 
             let scene_handle: Handle<Scene> = asset_server
@@ -119,6 +116,4 @@ fn handle_load_request(
         }
         _ => {}
     }
-
-    request_state.requested = None;
 }
