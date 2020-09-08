@@ -1,3 +1,5 @@
+use std::{error::Error, fs};
+
 use bevy::{prelude::*, type_registry::TypeRegistry};
 use bevy_gl::{
     feat::scene::SpawnPlugin,
@@ -12,6 +14,9 @@ use bevy_gl::{
         },
     },
 };
+
+const FLOOR_MESH: Handle<Mesh> = Handle::from_u128(9876876576531110);
+const FLOOR_MATERIAL: Handle<StandardMaterial> = Handle::from_u128(9876876576531111);
 
 enum Request {
     PersistScene,
@@ -47,22 +52,37 @@ fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>,
+    scene_spawner: ResMut<SceneSpawner>,
 ) {
-    let material = materials.add(StandardMaterial {
-        albedo: Color::rgb(0.5, 0.4, 0.3),
-        ..Default::default()
-    });
+    materials.set(
+        FLOOR_MATERIAL,
+        StandardMaterial {
+            albedo: Color::rgb(0.5, 0.4, 0.3),
+            ..Default::default()
+        },
+    );
+    meshes.set(FLOOR_MESH, Mesh::from(shape::Plane { size: 10.0 }));
 
-    commands
-        .spawn(PbrComponents {
-            mesh: meshes.add(Mesh::from(shape::Plane { size: 10.0 })),
-            material,
-            ..Default::default()
-        })
-        .spawn(LightComponents {
-            translation: Translation::new(4.0, 5.0, -4.0),
-            ..Default::default()
-        });
+    //
+    // Try to load the existing scene or create it fresh if that fails
+    //
+
+    match try_load_scene(asset_server, scene_spawner) {
+        Ok(_) => {}
+        Err(_) => {
+            commands
+                .spawn(PbrComponents {
+                    mesh: FLOOR_MESH,
+                    material: FLOOR_MATERIAL,
+                    ..Default::default()
+                })
+                .spawn(LightComponents {
+                    translation: Translation::new(4.0, 5.0, -4.0),
+                    ..Default::default()
+                });
+        }
+    }
 }
 
 fn keyboard_commands(mut request_state: ResMut<RequestState>, keyboard_input: Res<Input<KeyCode>>) {
@@ -97,23 +117,31 @@ fn handle_persist_request(world: &mut World, resources: &mut Resources) {
 
 fn handle_load_request(
     asset_server: Res<AssetServer>,
-    mut scene_spawner: ResMut<SceneSpawner>,
+    scene_spawner: ResMut<SceneSpawner>,
     mut request_state: ResMut<RequestState>,
 ) {
     match request_state.requested {
         Some(Request::LoadScene) => {
-            let scene_path = init_tmp_path("persist_scene", "scene.scn")
-                .expect("Failed to load serialized scene, make sure to persist one first");
-
-            let scene_handle: Handle<Scene> = asset_server
-                .load(scene_path.clone())
-                .expect("failed to load scene via assert server");
-            scene_spawner.instance(scene_handle);
-            scene_spawner.load(scene_handle);
-
-            println!("loaded scene from {}", scene_path.clone());
+            try_load_scene(asset_server, scene_spawner).expect("Failed to load persisted scene");
             request_state.requested = None;
         }
         _ => {}
     }
+}
+
+fn try_load_scene(
+    asset_server: Res<AssetServer>,
+    mut scene_spawner: ResMut<SceneSpawner>,
+) -> Result<(), Box<dyn Error>> {
+    let scene_path = init_tmp_path("persist_scene", "scene.scn")?;
+    // Throw if scene path does not exist
+    fs::metadata(&scene_path)?;
+
+    let scene_handle: Handle<Scene> = asset_server.load(scene_path.clone())?;
+    scene_spawner.instance(scene_handle);
+    scene_spawner.load(scene_handle);
+
+    asset_server.watch_for_changes().unwrap();
+    println!("loaded scene from {}", scene_path.clone());
+    Ok(())
 }

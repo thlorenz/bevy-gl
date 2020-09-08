@@ -54,9 +54,7 @@ pub fn save_to_tmp(
     Ok(full_path)
 }
 
-pub fn load_from_tmp(
-    feat_id: &str,
-    filename: &str) -> Result<(String, String), Box<dyn Error>> {
+pub fn load_from_tmp(feat_id: &str, filename: &str) -> Result<(String, String), Box<dyn Error>> {
     let full_path = init_tmp_path(feat_id, filename)?;
     let content = load_from(full_path.clone())?;
     Ok((full_path, content))
